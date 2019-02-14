@@ -1,0 +1,73 @@
+#include <iostream>
+#include <vector>
+#include <cassert>
+
+const int size = 16;
+void reallocate(std::vector<int> &tab);
+bool check_history(std::vector<int>, std::vector<std::vector<int>>, int);
+
+int main() {
+	std::vector<std::vector<int>> history;
+	int mem0[] = {14, 0, 15, 12, 11, 11, 3, 5, 1, 6, 8, 4, 9, 1, 8, 4};
+	std::vector<int> mem(mem0, mem0 + sizeof(mem0) / sizeof(mem0[0]) );
+	history.push_back(mem);
+	int CNT = 1; // this will be our solution
+
+	while (true) {
+		reallocate(mem);
+		bool repeat = check_history(mem, history, CNT);
+		if (repeat)
+			break;
+		else {
+/*			std::cout << "iteracja: " << CNT << "\t vec: ";
+			for (int i = 0; i < size; i++)
+				std::cout << mem[i] << " ";
+			std::cout << '\n';*/
+			history.push_back(mem);
+			CNT++;
+		}
+	}
+
+	std::cout << "counter  = " << CNT << std::endl;
+	for (int i = 0; i < size; i++)
+		std::cout << mem[i] << ", "; //<< std::endl;
+	return 0;
+}
+
+bool check_history(std::vector<int> entry, std::vector<std::vector<int>> history, int elements) {
+	for (int it = 0; it < elements; it++) {
+		for (int in = 0; in < size; in++) {
+			if (entry[in] != history[it][in])
+				break;
+			else if (in+1 == size) {
+				std::cout << "the same occurance at line: " << it << std::endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void reallocate(std::vector<int> &tab) {
+	int ind = 0;
+	int max = tab[0];
+	for (int i = 1; i < size; i++) {
+		// when max == tab[i] => condition not met, so
+		// minimum index precedense in case of ties holds
+		if (max < tab[i]) {
+			max = tab[i];
+			ind = i;
+		}
+	}
+	assert(max <= 15);
+	tab[ind] = 0;
+	ind++;
+	//std::cout << "max in current vector:" <<  max << '\n' << ind << std::endl;
+	while (max != 0) {
+		if (ind == size)
+			ind = 0;
+		tab[ind]++;
+		ind++;
+		max--;
+	}
+}
