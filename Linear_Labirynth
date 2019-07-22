@@ -1,0 +1,44 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+// Dodatkowo trzeba pobrac plik wejsciowy ze strony AOC 2017
+
+const unsigned int LENGTH = 1044;
+
+using std::cout;
+using std::endl;
+
+int main() {
+	int steps = 0;
+	int current = 0;
+	std::string line;
+	std::ifstream myfile("labirynth.txt");
+	std::vector<int> maze(LENGTH);
+	std::vector<int> offsets(LENGTH);
+
+	std::vector<int>::iterator it = maze.begin();
+	while ( getline(myfile, line) ) {
+		*it = std::stoi(line);
+		it++;
+	}
+
+	it = maze.begin();
+	while (current >= 0 && current < static_cast<signed int>(LENGTH)) {
+		current += *it; // bieżąca pozycja w labiryncie
+		if (*it < 3)
+			(*it)++; // increment poprzedniej pozycji
+		else
+			(*it)--; // decrement, jeżeli 3+
+		it = maze.begin() + current; // Najpierw zerujemy
+
+		steps++;
+	}
+
+	for (std::vector<int>::iterator it = offsets.begin(); it < offsets.end(); it++) {
+		cout << *it << '\n';
+	}
+	cout << "steps: " << steps << endl;
+	cout << "current: " << current << endl;
+	return 0;
+}
